@@ -6,21 +6,24 @@ import styles from "../styles/GameBoard.module.css";
 const eatSound = new Audio("/beep.mp3");
 
 /**
- * Generate random coordinates between 0 and 98 (multiple of 2).
+ * Generate random coordinates in multiples of 5 between 0 and 95.
+ * This aligns with the 5% grid.
  */
 const getRandomCoordinates = () => {
-  const gridSize = 2;
+  const gridSize = 5;  // changed from 2 to 5
   const min = 0;
-  const max = 98;
+  const max = 95;      // changed from 98 to 95 (so 100% - 5%)
   let x = Math.floor(Math.random() * ((max - min) / gridSize)) * gridSize + min;
   let y = Math.floor(Math.random() * ((max - min) / gridSize)) * gridSize + min;
   return [x, y];
 };
 
-/** Initial snake position. */
+/**
+ * Updated initial snake positions to match 5% steps.
+ */
 const initialSnake = [
-  [50, 50],
-  [52, 50]
+  [50, 50],  // still fine
+  [55, 50]   // changed from 52, 50 to 55, 50
 ];
 
 const GameBoard = () => {
@@ -70,127 +73,152 @@ const GameBoard = () => {
     return speed < 30 ? 30 : speed;
   }, [difficulty, speedFactor]);
 
-  // Check if the snake head is on the food
-  const checkIfEat = useCallback((head) => {
-    if (head[0] === foodPosition[0] && head[1] === foodPosition[1]) {
-      setFoodPosition(getRandomCoordinates());
-      setAteFood(true);
+  /**
+   * Check if the snake head is on the food.
+   */
+  const checkIfEat = useCallback(
+    (head) => {
+      if (head[0] === foodPosition[0] && head[1] === foodPosition[1]) {
+        setFoodPosition(getRandomCoordinates());
+        setAteFood(true);
 
-      // Play the "eat" sound
-      eatSound.currentTime = 0;
-      eatSound.play().catch(() => {});
+        // Play the "eat" sound
+        eatSound.currentTime = 0;
+        eatSound.play().catch(() => {});
 
-      // Trigger "ateFood" animation for 300ms
-      setTimeout(() => setAteFood(false), 300);
-      return true;
-    }
-    return false;
-  }, [foodPosition]);
-
-  // Check collision with edges (0..98) or snake's own body
-  const checkCollision = useCallback((head) => {
-    if (head[0] < 0 || head[0] > 98 || head[1] < 0 || head[1] > 98) {
-      return true;
-    }
-    for (let i = 0; i < snakeDots.length - 1; i++) {
-      if (snakeDots[i][0] === head[0] && snakeDots[i][1] === head[1]) {
+        // Trigger "ateFood" animation for 300ms
+        setTimeout(() => setAteFood(false), 300);
         return true;
       }
-    }
-    return false;
-  }, [snakeDots]);
+      return false;
+    },
+    [foodPosition]
+  );
 
-  // Handle arrow keys + "P" for pause
-  const onKeyDown = useCallback((e) => {
-    if ([37, 38, 39, 40].includes(e.keyCode)) {
-      e.preventDefault();
-    }
-    // "P" for pause
-    if (e.keyCode === 80 && isStarted && !gameOver) {
-      setIsPaused((prev) => !prev);
-    }
-    switch (e.keyCode) {
-      case 37: // left
-        if (direction !== "RIGHT") setDirection("LEFT");
-        break;
-      case 38: // up
-        if (direction !== "DOWN") setDirection("UP");
-        break;
-      case 39: // right
-        if (direction !== "LEFT") setDirection("RIGHT");
-        break;
-      case 40: // down
-        if (direction !== "UP") setDirection("DOWN");
-        break;
-      default:
-        break;
-    }
-  }, [direction, isStarted, gameOver]);
+  /**
+   * Check collision with edges (0..95) or snake's own body.
+   */
+  const checkCollision = useCallback(
+    (head) => {
+      // Updated boundaries: 0..95
+      if (head[0] < 0 || head[0] > 95 || head[1] < 0 || head[1] > 95) {
+        return true;
+      }
+      for (let i = 0; i < snakeDots.length - 1; i++) {
+        if (snakeDots[i][0] === head[0] && snakeDots[i][1] === head[1]) {
+          return true;
+        }
+      }
+      return false;
+    },
+    [snakeDots]
+  );
 
-  // Move the snake each frame
-  const moveSnake = useCallback((timestamp) => {
-    if (!isStarted || isPaused || gameOver) {
-      lastUpdateTime.current = timestamp;
-      return;
-    }
-
-    const deltaTime = timestamp - lastUpdateTime.current;
-    if (deltaTime > getSpeed()) {
-      lastUpdateTime.current = timestamp;
-
-      let newSnake = [...snakeDots];
-      let head = newSnake[newSnake.length - 1];
-
-      switch (direction) {
-        case "RIGHT":
-          head = [head[0] + 2, head[1]];
+  /**
+   * Handle arrow keys + "P" for pause.
+   */
+  const onKeyDown = useCallback(
+    (e) => {
+      if ([37, 38, 39, 40].includes(e.keyCode)) {
+        e.preventDefault();
+      }
+      // "P" for pause
+      if (e.keyCode === 80 && isStarted && !gameOver) {
+        setIsPaused((prev) => !prev);
+      }
+      switch (e.keyCode) {
+        case 37: // left
+          if (direction !== "RIGHT") setDirection("LEFT");
           break;
-        case "LEFT":
-          head = [head[0] - 2, head[1]];
+        case 38: // up
+          if (direction !== "DOWN") setDirection("UP");
           break;
-        case "UP":
-          head = [head[0], head[1] - 2];
+        case 39: // right
+          if (direction !== "LEFT") setDirection("RIGHT");
           break;
-        case "DOWN":
-          head = [head[0], head[1] + 2];
+        case 40: // down
+          if (direction !== "UP") setDirection("DOWN");
           break;
         default:
-          return;
+          break;
       }
+    },
+    [direction, isStarted, gameOver]
+  );
 
-      newSnake.push(head);
-      // If not eating, shift tail
-      if (!checkIfEat(head)) {
-        newSnake.shift();
-      }
-
-      // Check collisions
-      if (checkCollision(head)) {
-        setGameOver(true);
-        // Update High Score if needed
-        const currentScore = newSnake.length - initialSnake.length;
-        if (currentScore > highScore) {
-          setHighScore(currentScore);
-          localStorage.setItem("snakeHighScore", currentScore.toString());
-        }
+  /**
+   * Move the snake each frame.
+   */
+  const moveSnake = useCallback(
+    (timestamp) => {
+      if (!isStarted || isPaused || gameOver) {
+        lastUpdateTime.current = timestamp;
         return;
       }
 
-      setSnakeDots(newSnake);
-    }
-  }, [
-    snakeDots,
-    direction,
-    isStarted,
-    isPaused,
-    gameOver,
-    checkIfEat,
-    checkCollision,
-    highScore,
-    getSpeed
-  ]);
+      const deltaTime = timestamp - lastUpdateTime.current;
+      if (deltaTime > getSpeed()) {
+        lastUpdateTime.current = timestamp;
 
-  // Keydown event listener
+        let newSnake = [...snakeDots];
+        let head = newSnake[newSnake.length - 1];
+
+        // Updated step from 2 to 5
+        switch (direction) {
+          case "RIGHT":
+            head = [head[0] + 5, head[1]];
+            break;
+          case "LEFT":
+            head = [head[0] - 5, head[1]];
+            break;
+          case "UP":
+            head = [head[0], head[1] - 5];
+            break;
+          case "DOWN":
+            head = [head[0], head[1] + 5];
+            break;
+          default:
+            return;
+        }
+
+        newSnake.push(head);
+
+        // If not eating, shift tail
+        if (!checkIfEat(head)) {
+          newSnake.shift();
+        }
+
+        // Check collisions
+        if (checkCollision(head)) {
+          setGameOver(true);
+          // Update High Score if needed
+          const currentScore = newSnake.length - initialSnake.length;
+          if (currentScore > highScore) {
+            setHighScore(currentScore);
+            localStorage.setItem("snakeHighScore", currentScore.toString());
+          }
+          return;
+        }
+
+        setSnakeDots(newSnake);
+      }
+    },
+    [
+      snakeDots,
+      direction,
+      isStarted,
+      isPaused,
+      gameOver,
+      checkIfEat,
+      checkCollision,
+      highScore,
+      getSpeed
+    ]
+  );
+
+  /**
+   * Keydown event listener.
+   */
   useEffect(() => {
     document.addEventListener("keydown", onKeyDown);
     return () => {
@@ -199,7 +227,9 @@ const GameBoard = () => {
     };
   }, [onKeyDown]);
 
-  // Animation loop
+  /**
+   * Animation loop.
+   */
   useEffect(() => {
     const gameLoop = (timestamp) => {
       moveSnake(timestamp);
@@ -212,7 +242,9 @@ const GameBoard = () => {
     return () => cancelAnimationFrame(animationFrameId.current);
   }, [isStarted, gameOver, isPaused, moveSnake]);
 
-  // Restart the game
+  /**
+   * Restart the game.
+   */
   const handleRestart = () => {
     setSnakeDots(initialSnake);
     setFoodPosition(getRandomCoordinates());
@@ -222,7 +254,9 @@ const GameBoard = () => {
     lastUpdateTime.current = performance.now();
   };
 
-  // Start the game
+  /**
+   * Start the game.
+   */
   const handleStart = () => {
     setSnakeDots(initialSnake);
     setFoodPosition(getRandomCoordinates());
@@ -232,12 +266,16 @@ const GameBoard = () => {
     setIsStarted(true);
   };
 
-  // Change difficulty
+  /**
+   * Change difficulty.
+   */
   const handleDifficultyChange = (e) => {
     setDifficulty(e.target.value);
   };
 
-  // Mobile arrow button clicks
+  /**
+   * Mobile arrow button clicks.
+   */
   const handleMobileDirection = (newDir) => {
     if (!isStarted || gameOver) return;
     if (newDir === "LEFT" && direction !== "RIGHT") setDirection("LEFT");
@@ -246,7 +284,9 @@ const GameBoard = () => {
     if (newDir === "DOWN" && direction !== "UP") setDirection("DOWN");
   };
 
-  // Mobile pause/resume
+  /**
+   * Mobile pause/resume.
+   */
   const handleMobilePause = () => {
     if (!isStarted || gameOver) return;
     setIsPaused((prev) => !prev);
@@ -335,39 +375,36 @@ const GameBoard = () => {
       {/* Mobile controls (displayed on small screens, below the board) */}
       <div className={styles.mobileControls}>
         <div className={styles.row}>
-          <button 
-            className={styles.controlBtn} 
+          <button
+            className={styles.controlBtn}
             onClick={() => handleMobileDirection("UP")}
           >
             &#9650; {/* Up arrow */}
           </button>
         </div>
         <div className={styles.row}>
-          <button 
-            className={styles.controlBtn} 
+          <button
+            className={styles.controlBtn}
             onClick={() => handleMobileDirection("LEFT")}
           >
             &#9664; {/* Left arrow */}
           </button>
 
           {/* Center button toggles between pause/play icons */}
-          <button 
-            className={styles.controlBtn} 
-            onClick={handleMobilePause}
-          >
+          <button className={styles.controlBtn} onClick={handleMobilePause}>
             {isPaused ? "▶" : "⏸"}
           </button>
 
-          <button 
-            className={styles.controlBtn} 
+          <button
+            className={styles.controlBtn}
             onClick={() => handleMobileDirection("RIGHT")}
           >
             &#9654; {/* Right arrow */}
           </button>
         </div>
         <div className={styles.row}>
-          <button 
-            className={styles.controlBtn} 
+          <button
+            className={styles.controlBtn}
             onClick={() => handleMobileDirection("DOWN")}
           >
             &#9660; {/* Down arrow */}

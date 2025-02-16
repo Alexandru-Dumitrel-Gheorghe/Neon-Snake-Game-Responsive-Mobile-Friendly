@@ -1,19 +1,20 @@
 :global(html, body) {
   margin: 0;
   padding: 0;
-  overflow: hidden; 
-  background-color: #0d0d0d; /* Dark background */
-  color: #eee;              
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  background: #06060b; /* Dark background */
+  font-family: "Verdana", sans-serif;
+  color: #eee;
 }
 
-/* Main wrapper taking full screen */
+/* Main wrapper for the entire game layout */
 .wrapper {
   display: flex;
   flex-direction: row;
-  justify-content: center; 
-  align-items: center;     
+  justify-content: center;   /* horizontally centered */
+  align-items: center;       /* vertically centered */
   gap: 20px;
   width: 100vw;
   height: 100vh;
@@ -26,31 +27,43 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+  margin-left: 0;
+  margin-right: 80px;
 }
 
 .score {
   margin-bottom: 10px;
   font-size: 1.2rem;
   font-weight: bold;
-  color: #ffca28; /* Light yellow */
+  color: #00fbdc;
+  text-shadow: 0 0 5px rgba(0, 251, 220, 0.7);
 }
 
-/* Difficulty selector */
 .difficultySelector {
   margin-bottom: 15px;
   font-size: 1rem;
-  color: #ffca28;
+  color: #00fbdc;
 }
 
 .difficultySelector select {
   margin-left: 5px;
   padding: 4px;
   border-radius: 4px;
-  border: none;
+  border: 1px solid #00fbdc;
   outline: none;
-  background: #ffca28;
-  color: #333;
+  background: #0a0a0a;
+  color: #00fbdc;
   cursor: pointer;
+  text-shadow: 0 0 3px rgba(0, 251, 220, 0.6);
+}
+
+.difficultySelector select:focus {
+  border-color: #00ffc8;
 }
 
 /* Buttons */
@@ -60,31 +73,39 @@
   margin-bottom: 10px;
   padding: 10px 20px;
   font-size: 1rem;
-  background: #ffca28;
-  color: #333;
+  background: linear-gradient(135deg, #00fbdc 0%, #00c8ff 100%);
+  color: #000;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
 }
 
 .startButton:hover,
 .pauseButton:hover,
 .restartButton:hover {
-  background: #ffd54f; 
-  color: #000;
+  background: linear-gradient(135deg, #00fff0 0%, #00d8ff 100%);
+  transform: scale(1.05);
 }
 
-/* Board container */
+.speedLabel {
+  color: #00fbdc;
+  margin-right: 10px;
+  text-shadow: 0 0 3px rgba(0, 251, 220, 0.6);
+}
+
+/* The board container */
 .boardWrapper {
-  width: 60vw;       
-  height: 60vw;      
-  max-width: 600px;  
+  width: 60vw;
+  height: 60vw;
+  max-width: 600px;
   max-height: 600px;
   position: relative;
-  box-shadow: 0px 5px 15px rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
 }
 
+/* The actual board with neon grid */
 .gameBoard {
   position: absolute;
   top: 0;
@@ -92,33 +113,29 @@
   width: 100%;
   height: 100%;
 
-  /* Neon background gradient + grid */
-  background: linear-gradient(135deg, #131313 0%, #1a1a1a 100%);
+  background: radial-gradient(circle at center, #0a0a0a 0%, #06060b 80%);
   background-image:
-    radial-gradient(circle, rgba(0, 255, 255, 0.05) 1%, transparent 2%),
-    repeating-linear-gradient(0deg, #222 0px, #1a1a1a 2px, transparent 4px),
-    repeating-linear-gradient(90deg, #222 0px, #1a1a1a 2px, transparent 4px);
-  background-size: 
-    60px 60px,  
-    10px 10px,  
-    10px 10px;
+    linear-gradient(to right, rgba(0,255,255,0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,255,255,0.2) 1px, transparent 1px);
+  background-size: 5% 5%;
+  background-position: 2.5% 2.5%;
 
-  opacity: 0.95;
-  border: 2px solid #0ff;
+  border: 2px solid #00fbdc;
   border-radius: 10px;
-  box-shadow: 
-    0 0 10px #0ff, 
-    0 0 20px rgba(0, 255, 255, 0.3) inset;
+  box-shadow:
+    0 0 10px #00fbdc,
+    0 0 20px rgba(0,255,255,0.3) inset;
+  opacity: 0.95;
 }
 
-/* Overlays (Game Over, Paused) */
+/* Overlays */
 .overlay {
   position: absolute;
-  top: 0; 
+  top: 0;
   left: 0;
-  width: 100%; 
+  width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6); 
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -129,18 +146,18 @@
 .gameOverText,
 .pauseText {
   font-size: 2rem;
-  color: #ffca28;
+  color: #00fbdc;
   margin-bottom: 20px;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.7);
 }
 
-/* Mobile controls (initially hidden on large screens) */
+/* Mobile controls */
 .mobileControls {
-  display: none; 
+  display: none;
   flex-direction: column;
   align-items: center;
   gap: 5px;
-  margin-top: 20px; /* space above controls */
+  margin-top: 20px;
 }
 
 .row {
@@ -155,42 +172,35 @@
   font-size: 1.5rem;
   border-radius: 10px;
   border: none;
-  background: #ffca28;
-  color: #333;
+  background: linear-gradient(135deg, #00fbdc 0%, #00c8ff 100%);
+  color: #000;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-  transition: background 0.2s ease;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .controlBtn:hover {
-  background: #ffd54f;
+  background: linear-gradient(135deg, #00fff0 0%, #00d8ff 100%);
+  transform: scale(1.05);
 }
 
-/* 
-   --- MEDIA QUERIES ---
-   Switch to column layout on smaller screens 
-   and display the mobile controls below the board.
-*/
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .wrapper {
     flex-direction: column;
-    align-items: center;
+    align-items: center; /* keep center alignment on smaller screens */
     height: auto;
   }
-
   .leftPanel {
     align-items: center;
     margin-bottom: 20px;
   }
-
   .boardWrapper {
     width: 80vw;
     height: 80vw;
     max-width: 400px;
     max-height: 400px;
   }
-
-  /* Show mobile controls on small screens */
   .mobileControls {
     display: flex;
   }

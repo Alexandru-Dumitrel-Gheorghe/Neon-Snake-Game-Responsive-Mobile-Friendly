@@ -1,30 +1,25 @@
 import React, { useState, useEffect } from "react";
 import styles from "../styles/Food.module.css";
 
-/**
- * Props:
- * - foodPosition: [x, y] coordinates for the fruit
- * - ateFood: triggers the "disappear" animation when true
- */
 const Food = ({ foodPosition, ateFood }) => {
   const [spawnAnimation, setSpawnAnimation] = useState(false);
   const [disappearAnimation, setDisappearAnimation] = useState(false);
 
-  // Position style
+  // The food is centered at (foodPosition[0]%, foodPosition[1]%)
   const style = {
     left: `${foodPosition[0]}%`,
     top: `${foodPosition[1]}%`,
     transform: "translate(-50%, -50%)"
   };
 
-  // Animate spawn on position change
+  // Animate spawn on new position
   useEffect(() => {
     setSpawnAnimation(true);
     const timer = setTimeout(() => setSpawnAnimation(false), 300);
     return () => clearTimeout(timer);
   }, [foodPosition]);
 
-  // Animate disappear if ateFood is true
+  // Animate disappear if "ateFood" is true
   useEffect(() => {
     if (ateFood) {
       setDisappearAnimation(true);

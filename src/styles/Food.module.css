@@ -1,7 +1,7 @@
 .food {
   position: absolute;
-  width: 5%;
-  height: 5%;
+  width: 4%;
+  height: 4%;
   border-radius: 50%;
   transition: all 0.1s ease-in-out;
 
@@ -12,7 +12,6 @@
     inset 0 2px 3px rgba(255, 255, 255, 0.2);
 }
 
-/* Stem */
 .food::before {
   content: "";
   position: absolute;
@@ -25,8 +24,6 @@
   border-radius: 2px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
-
-/* Leaf */
 .food::after {
   content: "";
   position: absolute;
@@ -40,7 +37,7 @@
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
 }
 
-/* Spawn animation */
+/* Spawn/Disappear animations (optional) */
 @keyframes spawnPulse {
   0% {
     transform: translate(-50%, -50%) scale(0.2);
@@ -55,7 +52,6 @@
   animation: spawnPulse 0.3s ease-out;
 }
 
-/* Disappear animation */
 @keyframes disappearPulse {
   0% {
     transform: translate(-50%, -50%) scale(1);

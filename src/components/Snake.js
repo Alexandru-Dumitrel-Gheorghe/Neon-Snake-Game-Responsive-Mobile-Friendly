@@ -5,15 +5,16 @@ const Snake = ({ snakeDots, ateFood }) => {
   return (
     <>
       {snakeDots.map((dot, i) => {
-        // Each segment at [x, y], centered
+        // Each segment is centered at dot[0]%, dot[1]%
+        // Then shift with translate(-50%, -50%)
         const style = {
           left: `${dot[0]}%`,
           top: `${dot[1]}%`,
           transform: "translate(-50%, -50%)"
         };
 
-        // The head is the last segment
         if (i === snakeDots.length - 1) {
+          // Head
           return (
             <div
               key={i}
@@ -27,7 +28,7 @@ const Snake = ({ snakeDots, ateFood }) => {
             </div>
           );
         } else {
-          // Body segments
+          // Body segment
           return (
             <div key={i} className={styles.snakeDot} style={style}></div>
           );
