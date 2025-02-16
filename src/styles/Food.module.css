@@ -1,0 +1,71 @@
+.food {
+  position: absolute;
+  width: 5%;
+  height: 5%;
+  border-radius: 50%;
+  transition: all 0.1s ease-in-out;
+
+  /* Apple-like gradient + shadows */
+  background: radial-gradient(circle at 30% 30%, #ff5555, #c0392b);
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.4),
+    inset 0 2px 3px rgba(255, 255, 255, 0.2);
+}
+
+/* Stem */
+.food::before {
+  content: "";
+  position: absolute;
+  top: -8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10%;
+  height: 20%;
+  background: #5D4037;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Leaf */
+.food::after {
+  content: "";
+  position: absolute;
+  top: -10%;
+  left: 40%;
+  width: 20%;
+  height: 20%;
+  background: #2E7D32;
+  border-radius: 50% 50% 0 50%;
+  transform: rotate(-20deg);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+/* Spawn animation */
+@keyframes spawnPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+.spawn {
+  animation: spawnPulse 0.3s ease-out;
+}
+
+/* Disappear animation */
+@keyframes disappearPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.1);
+    opacity: 0;
+  }
+}
+.disappear {
+  animation: disappearPulse 0.2s forwards ease-in;
+}

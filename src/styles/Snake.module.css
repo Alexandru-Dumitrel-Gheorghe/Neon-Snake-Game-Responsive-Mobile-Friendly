@@ -1,0 +1,90 @@
+/* Body segments */
+.snakeDot {
+  position: absolute;
+  width: 4%;
+  height: 4%;
+  border-radius: 50%;
+  transition: all 0.15s ease-out;
+  
+  /* Green gradient, slight 3D effect */
+  background: radial-gradient(circle at 30% 30%, #9CCC65, #558B2F);
+  
+  /* Shadows for volume */
+  box-shadow: 
+    0 3px 6px rgba(0, 0, 0, 0.4),
+    inset 0 1px 3px rgba(255, 255, 255, 0.2);
+  z-index: 10;
+}
+
+/* Snake head */
+.snakeHead {
+  position: absolute;
+  width: 5%;
+  height: 5%;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.15s ease-out;
+  overflow: hidden;
+  z-index: 11;
+  
+  /* Gradient for the head */
+  background: radial-gradient(circle at 30% 30%, #AED581, #7CB342);
+
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+/* Pulse effect when the snake eats food */
+@keyframes pulse {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.2); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+.ate {
+  animation: pulse 0.3s ease-in-out;
+}
+
+/* Extra highlight on the head */
+.highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.3), transparent);
+}
+
+/* Eyes */
+.eyeLeft, .eyeRight {
+  position: absolute;
+  width: 20%;
+  height: 20%;
+  background: white;
+  border-radius: 50%;
+  top: 25%;
+  z-index: 2;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
+}
+.eyeLeft {
+  left: 20%;
+}
+.eyeRight {
+  right: 20%;
+}
+
+/* Tongue */
+.tongue {
+  position: absolute;
+  bottom: 5%;
+  width: 10%;
+  height: 15%;
+  background: #e53935;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  z-index: 3;
+}

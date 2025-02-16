@@ -1,0 +1,41 @@
+.portal {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* width/height vin din style inline (Portal.jsx) */
+  }
+  
+  /* Linia verticală luminoasă */
+  .portalLineVertical {
+    width: 4px;
+    height: 100%;
+    background-color: #fff;
+    border-radius: 2px;
+  
+    box-shadow: 0 0 10px #fff, 0 0 20px #fff;
+    animation: glowPulse 1.5s infinite ease-in-out;
+  }
+  
+  /* Linia orizontală luminoasă */
+  .portalLineHorizontal {
+    width: 100%;
+    height: 4px;
+    background-color: #fff;
+    border-radius: 2px;
+  
+    box-shadow: 0 0 10px #fff, 0 0 20px #fff;
+    animation: glowPulse 1.5s infinite ease-in-out;
+  }
+  
+  @keyframes glowPulse {
+    0%, 100% {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+  }
+  
